@@ -26,13 +26,13 @@ def parse_args():
     parser.add_argument(
         "--report", "-r", type=str, help="Type of report.", required=True
     )
-
-    return parser.parse_args()
+    args = parser.parse_args()
+    return args.report, set(args.log_files)
 
 
 def main():
-    args = parse_args()
-    for log_file in args.log_files:
+    report, log_files = parse_args()
+    for log_file in log_files:
         process_log_file(log_file)
 
 
