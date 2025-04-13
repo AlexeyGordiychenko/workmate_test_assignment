@@ -1,4 +1,4 @@
-from collections import defaultdict
+from collections import Counter, defaultdict
 
 from reports.base_report import BaseReport
 
@@ -23,7 +23,7 @@ class HandlersReport(BaseReport):
 
     def process_log_file(self, log_file):
         with open(log_file, "r") as f:
-            counts = defaultdict(lambda: defaultdict(int))
+            counts = defaultdict(Counter)
             for line in f:
                 if "django.request" in line:
                     parts = line.split(" ")
@@ -31,10 +31,10 @@ class HandlersReport(BaseReport):
                     endpoint = next((x for x in parts if x.startswith("/")), None)
                     if endpoint:
                         counts[endpoint.strip()][level] += 1
-        return dict(counts)
+        return counts
 
     def merge_log_files_data(self, results):
-        merged_counts = defaultdict(lambda: defaultdict(int))
+        merged_counts = defaultdict(Counter)
 
         for result in results:
             for endpoint, levels in result.items():
@@ -42,7 +42,7 @@ class HandlersReport(BaseReport):
                     merged_counts[endpoint][level] += count
                     self.total_count += count
                     self.endpoint_max_len = max(self.endpoint_max_len, len(endpoint))
-        self.data = dict(merged_counts)
+        self.data = merged_counts
 
     def output_report(self):  # pragma: no cover
         levels_count = defaultdict(int)
