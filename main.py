@@ -17,11 +17,42 @@ def process_log_file(log_file):
                 endpoint = next((x for x in parts if x.startswith("/")), None)
                 if endpoint:
                     counts[endpoint.strip()][level] += 1
-    print(f"\nLog file: {log_file}")
+    return counts
+
+
+def merge_log_files_data(results):
+    merged_counts = defaultdict(lambda: defaultdict(int))
+    total_count = 0
+    max_endpoint_len = 0
+
+    for result in results:
+        for endpoint, levels in result.items():
+            for level, count in levels.items():
+                merged_counts[endpoint][level] += count
+                total_count += count
+                max_endpoint_len = max(max_endpoint_len, len(endpoint))
+    return merged_counts, total_count, max_endpoint_len
+
+
+def output_report(counts, total_count, endpoint_max_len):
+    levels = {level: 0 for level in ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL")}
+    column_width = max(len(level) for level in levels) + 1
+    endpoint_max_len += 1
+    print(f"Total requests: {total_count}\n")
+    print(f"{'HANDLER':<{endpoint_max_len}}", end="")
+    for level in levels:
+        print(f"{level:<{column_width}}", end="")
+    print()
     for endpoint in sorted(counts.keys()):
-        print(endpoint)
-        for level in counts[endpoint]:
-            print(f"  {level}: {counts[endpoint][level]}")
+        print(f"{endpoint:<{endpoint_max_len}}", end="")
+        for level in levels:
+            print(f"{counts[endpoint][level]:<{column_width}}", end="")
+            levels[level] += counts[endpoint][level]
+        print()
+    print(" " * endpoint_max_len, end="")
+    for level in levels.values():
+        print(f"{level:<{column_width}}", end="")
+    print()
 
 
 def parse_args():
@@ -51,8 +82,9 @@ def main():
             sep="\n",
         )
         return
-    for log_file in log_files:
-        process_log_file(log_file)
+    results = [process_log_file(log_file) for log_file in log_files]
+    merge_counts, total_count, max_endpoint_len = merge_log_files_data(results)
+    output_report(merge_counts, total_count, max_endpoint_len)
 
 
 if __name__ == "__main__":
