@@ -1,5 +1,10 @@
 import argparse
 from collections import defaultdict
+from pathlib import Path
+
+
+def check_log_files_exist(log_files):
+    return [log_file for log_file in log_files if not Path(log_file).exists()]
 
 
 def process_log_file(log_file):
@@ -32,6 +37,14 @@ def parse_args():
 
 def main():
     report, log_files = parse_args()
+    error_log_files = check_log_files_exist(log_files)
+    if error_log_files:
+        print(
+            "Error: The following log files do not exist:",
+            "\n".join(error_log_files),
+            sep="\n",
+        )
+        return
     for log_file in log_files:
         process_log_file(log_file)
 
