@@ -29,7 +29,12 @@ def parse_args():
     )
     parser.add_argument("log_files", nargs="+", type=str, help="Log files to parse.")
     parser.add_argument(
-        "--report", "-r", type=str, help="Type of report.", required=True
+        "--report",
+        "-r",
+        type=str,
+        choices=["handlers"],
+        help="Type of report.",
+        required=True,
     )
     args = parser.parse_args()
     return args.report, set(args.log_files)
