@@ -1,5 +1,7 @@
 import argparse
+import os
 from collections import defaultdict
+from multiprocessing import Pool
 from pathlib import Path
 
 
@@ -17,7 +19,7 @@ def process_log_file(log_file):
                 endpoint = next((x for x in parts if x.startswith("/")), None)
                 if endpoint:
                     counts[endpoint.strip()][level] += 1
-    return counts
+    return dict(counts)
 
 
 def merge_log_files_data(results):
@@ -82,7 +84,8 @@ def main():
             sep="\n",
         )
         return
-    results = [process_log_file(log_file) for log_file in log_files]
+    with Pool(processes=os.cpu_count()) as pool:
+        results = pool.map(process_log_file, log_files)
     merge_counts, total_count, max_endpoint_len = merge_log_files_data(results)
     output_report(merge_counts, total_count, max_endpoint_len)
 
