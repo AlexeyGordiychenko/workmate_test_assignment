@@ -27,7 +27,7 @@ class HandlersReport(BaseReport):
             for line in f:
                 if "django.request" in line:
                     parts = line.split(" ")
-                    level = parts[2]
+                    level = parts[2] if len(parts) > 2 else ""
                     endpoint = next((x for x in parts if x.startswith("/")), None)
                     if endpoint:
                         counts[endpoint.strip()][level] += 1
