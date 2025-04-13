@@ -1,9 +1,10 @@
 import argparse
+from typing import List
 
 from reports import report_types
 
 
-def parse_args(args=None):
+def parse_args(args: List[str] = None) -> tuple:
     parser = argparse.ArgumentParser(
         description="Parse Django log files and count log levels per endpoint."
     )
@@ -20,7 +21,7 @@ def parse_args(args=None):
     return args.report, set(args.log_files)
 
 
-def main():  # pragma: no cover
+def main() -> None:  # pragma: no cover
     report, log_files = parse_args()
     report = report_types[report](log_files)
     report.generate_report()

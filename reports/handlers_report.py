@@ -1,18 +1,19 @@
 from collections import Counter, defaultdict
+from typing import DefaultDict, List, Set
 
 from reports.base_report import BaseReport
 
 
 class HandlersReport(BaseReport):
-    def __init__(self, log_files):
+    def __init__(self, log_files: Set[str]) -> None:
         super().__init__(log_files)
         self.levels = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
-        self.data = {}
+        self.data = defaultdict(Counter)
         self.total_count = 0
         self.endpoint_max_len = 10
         self.column_width = max(len(level) for level in self.levels)
 
-    def generate_report(self):  # pragma: no cover
+    def generate_report(self) -> None:  # pragma: no cover
         missing_log_files = self.missing_log_files
         if missing_log_files:
             self.output_missing_log_files(missing_log_files)
@@ -21,7 +22,7 @@ class HandlersReport(BaseReport):
         self.merge_log_files_data(self.process_log_files_in_parallel())
         self.output_report()
 
-    def process_log_file(self, log_file):
+    def process_log_file(self, log_file: str) -> DefaultDict[str, Counter]:
         with open(log_file, "r") as f:
             counts = defaultdict(Counter)
             for line in f:
@@ -33,7 +34,7 @@ class HandlersReport(BaseReport):
                         counts[endpoint.strip()][level] += 1
         return counts
 
-    def merge_log_files_data(self, results):
+    def merge_log_files_data(self, results: List[DefaultDict[str, Counter]]) -> None:
         merged_counts = defaultdict(Counter)
 
         for result in results:
@@ -44,7 +45,7 @@ class HandlersReport(BaseReport):
                     self.endpoint_max_len = max(self.endpoint_max_len, len(endpoint))
         self.data = merged_counts
 
-    def output_report(self):  # pragma: no cover
+    def output_report(self) -> None:  # pragma: no cover
         levels_count = defaultdict(int)
         self.endpoint_max_len += 1
         self.column_width += 1
