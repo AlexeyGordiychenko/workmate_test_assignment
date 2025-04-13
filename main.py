@@ -3,7 +3,7 @@ import argparse
 from reports import report_types
 
 
-def parse_args():
+def parse_args(args=None):
     parser = argparse.ArgumentParser(
         description="Parse Django log files and count log levels per endpoint."
     )
@@ -16,7 +16,7 @@ def parse_args():
         help="Type of report.",
         required=True,
     )
-    args = parser.parse_args()
+    args = parser.parse_args(args)
     return args.report, set(args.log_files)
 
 
