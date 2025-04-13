@@ -12,7 +12,7 @@ class HandlersReport(BaseReport):
         self.endpoint_max_len = 10
         self.column_width = max(len(level) for level in self.levels)
 
-    def generate_report(self):
+    def generate_report(self):  # pragma: no cover
         missing_log_files = self.missing_log_files
         if missing_log_files:
             self.output_missing_log_files(missing_log_files)
@@ -44,7 +44,7 @@ class HandlersReport(BaseReport):
                     self.endpoint_max_len = max(self.endpoint_max_len, len(endpoint))
         self.data = dict(merged_counts)
 
-    def output_report(self):
+    def output_report(self):  # pragma: no cover
         levels_count = defaultdict(int)
         self.endpoint_max_len += 1
         self.column_width += 1

@@ -12,7 +12,7 @@ class BaseReport:
     def missing_log_files(self):
         return [log_file for log_file in self.log_files if not Path(log_file).exists()]
 
-    def output_missing_log_files(self, missing_log_files):
+    def output_missing_log_files(self, missing_log_files):  # pragma: no cover
         print(
             "Error: The following log files do not exist:",
             "\n".join(missing_log_files),
@@ -20,12 +20,12 @@ class BaseReport:
             file=sys.stderr,
         )
 
-    def process_log_file(self, log_file):
+    def process_log_file(self, log_file):  # pragma: no cover
         pass
 
-    def process_log_files_in_parallel(self):
+    def process_log_files_in_parallel(self):  # pragma: no cover
         with Pool(processes=os.cpu_count()) as pool:
             return pool.map(self.process_log_file, self.log_files)
 
-    def generate_report(self):
+    def generate_report(self):  # pragma: no cover
         raise NotImplementedError

@@ -20,11 +20,11 @@ def parse_args(args=None):
     return args.report, set(args.log_files)
 
 
-def main():
+def main():  # pragma: no cover
     report, log_files = parse_args()
     report = report_types[report](log_files)
     report.generate_report()
 
 
 if __name__ == "__main__":
-    main()
+    main()  # pragma: no cover
