@@ -15,7 +15,8 @@ def process_log_file(log_file):
                 parts = line.split(" ")
                 level = parts[2]
                 endpoint = next((x for x in parts if x.startswith("/")), None)
-                counts[endpoint][level] += 1
+                if endpoint:
+                    counts[endpoint.strip()][level] += 1
     print(f"\nLog file: {log_file}")
     for endpoint in sorted(counts.keys()):
         print(endpoint)
