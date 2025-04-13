@@ -9,7 +9,7 @@ class HandlersReport(BaseReport):
         self.levels = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
         self.data = {}
         self.total_count = 0
-        self.endpoint_max_len = 0
+        self.endpoint_max_len = 10
         self.column_width = max(len(level) for level in self.levels)
 
     def generate_report(self):
