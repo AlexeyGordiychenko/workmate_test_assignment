@@ -5,9 +5,7 @@ from reports import report_types
 
 
 def parse_args(args: List[str] = None) -> tuple:
-    parser = argparse.ArgumentParser(
-        description="Parse Django log files and count log levels per endpoint."
-    )
+    parser = argparse.ArgumentParser(description="Log analyzer for Django apps.")
     parser.add_argument("log_files", nargs="+", type=str, help="Log files to parse.")
     parser.add_argument(
         "--report",
