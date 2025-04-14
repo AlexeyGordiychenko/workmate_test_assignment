@@ -14,6 +14,13 @@ class HandlersReport(BaseReport):
         self.column_width = max(len(level) for level in self.levels)
 
     def generate_report(self) -> None:  # pragma: no cover
+        """
+        Generate the report.
+
+        Process the log files in parallel, merge the data together, and then
+        output the report. If there are any missing log files, output a message
+        about them and return without generating the report.
+        """
         missing_log_files = self.missing_log_files
         if missing_log_files:
             self.output_missing_log_files(missing_log_files)
@@ -23,10 +30,20 @@ class HandlersReport(BaseReport):
         self.output_report()
 
     def process_log_file(self, log_file: str) -> DefaultDict[str, Counter]:
+        """
+        Process a single log file and return a dictionary of endpoints mapped to
+        counters of log levels.
+        The counters are the count of each log level for each endpoint.
+        The endpoints are the URLs of the requests.
+
+        :param log_file: The log file to process
+        :return: A dictionary of endpoints mapped to counters of log levels
+        """
         with open(log_file, "r") as f:
             counts = defaultdict(Counter)
             for line in f:
                 if "django.request" in line:
+                    # assume standard log structure, split by spaces, endpoints start with /
                     parts = line.split(" ")
                     level = parts[2] if len(parts) > 2 else ""
                     endpoint = next((x for x in parts if x.startswith("/")), None)
@@ -35,6 +52,17 @@ class HandlersReport(BaseReport):
         return counts
 
     def merge_log_files_data(self, results: List[DefaultDict[str, Counter]]) -> None:
+        """
+        Merge data from multiple log files.
+
+        This function takes a list of dictionaries containing endpoints mapped to
+        counters of log levels and merges them into a single dictionary. It also
+        updates the total count of log entries and the maximum length of the
+        endpoints for formatting purposes.
+
+        :param results: A list of dictionaries with endpoints as keys and counters
+                        of log levels as values.
+        """
         merged_counts = defaultdict(Counter)
 
         for result in results:
@@ -46,6 +74,14 @@ class HandlersReport(BaseReport):
         self.data = merged_counts
 
     def output_report(self) -> None:  # pragma: no cover
+        """
+        Output the report.
+
+        The report is a table with the endpoints as the first column and the log
+        levels as the other columns. The values in the table are the counts of the
+        log levels for each endpoint. The last row of the table is the total count
+        of each log level.
+        """
         levels_count = defaultdict(int)
         self.endpoint_max_len += 1
         self.column_width += 1
